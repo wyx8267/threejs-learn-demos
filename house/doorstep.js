@@ -10,10 +10,22 @@ shape.lineTo(600, -200);
 shape.lineTo(600, -300);
 shape.lineTo(0, -300);
 
+const loader = new THREE.TextureLoader();
+const texture = loader.load('./shuini.png');
+texture.colorSpace = THREE.SRGBColorSpace;
+texture.wrapS = THREE.RepeatWrapping;
+texture.wrapT = THREE.RepeatWrapping;
+texture.repeat.x = 0.001
+texture.repeat.y = 0.001
+
 const geometry = new THREE.ExtrudeGeometry(shape, {
     depth: 1000,
 });
-const material = new THREE.MeshLambertMaterial({ color: new THREE.Color('grey') });
+const material = new THREE.MeshLambertMaterial({ 
+    // color: new THREE.Color('grey') 
+    map: texture,
+    aoMap: texture,
+});
 
 const doorstep = new THREE.Mesh(geometry, material);
 doorstep.rotateY(-Math.PI / 2);

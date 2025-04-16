@@ -20,11 +20,21 @@ win.lineTo(3500, 1500);
 win.lineTo(2500, 1500);
 shape.holes.push(win);
 
+const loader = new THREE.TextureLoader();
+const texture = loader.load('./zhuan.png');
+texture.colorSpace = THREE.SRGBColorSpace;
+texture.wrapS = THREE.RepeatWrapping;
+texture.wrapT = THREE.RepeatWrapping;
+texture.repeat.x = 0.0005;
+texture.repeat.y = 0.0005;
+
 const geometry = new THREE.ExtrudeGeometry(shape, {
     depth: 100
 });
 const material = new THREE.MeshLambertMaterial({
-    color: new THREE.Color('lightgrey')
+    // color: new THREE.Color('lightgrey')
+    map: texture,
+    aoMap: texture,
 });
 
 const frontWall = new THREE.Mesh(geometry, material);

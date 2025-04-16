@@ -1,5 +1,13 @@
 import * as THREE from 'three';
 
+const loader = new THREE.TextureLoader();
+const texture = loader.load('./zhuan.png');
+texture.colorSpace = THREE.SRGBColorSpace;
+texture.wrapS = THREE.RepeatWrapping;
+texture.wrapT = THREE.RepeatWrapping;
+texture.repeat.x = 0.0005;
+texture.repeat.y = 0.0005;
+
 const shape = new THREE.Shape();
 
 shape.moveTo(0, 0);
@@ -20,7 +28,9 @@ const geometry = new THREE.ExtrudeGeometry(shape, {
 })
 
 const material = new THREE.MeshLambertMaterial({
-    color: new THREE.Color('lightgrey')
+    // color: new THREE.Color('lightgrey')
+    map: texture,
+    aoMap: texture,
 })
 
 const sideWall = new THREE.Mesh(geometry, material);

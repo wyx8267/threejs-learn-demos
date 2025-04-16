@@ -1,8 +1,18 @@
 import * as THREE from 'three';
 import { GUI } from 'three/addons/libs/lil-gui.module.min.js';
 
+const loader = new THREE.TextureLoader();
+const texture = loader.load('./wa.png');
+texture.colorSpace = THREE.SRGBColorSpace;
+texture.wrapS = THREE.RepeatWrapping;
+texture.repeat.x = 4;
+
 const geometry = new THREE.BoxGeometry(4000, 2000, 100);
-const material = new THREE.MeshLambertMaterial({ color: new THREE.Color('red') });
+const material = new THREE.MeshLambertMaterial({ 
+    // color: new THREE.Color('red')
+    map: texture,
+    aoMap: texture,
+});
 
 const roof = new THREE.Mesh(geometry, material);
 roof.position.y = 2600;
