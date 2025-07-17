@@ -4,10 +4,9 @@ import { MeshTypes } from "../../store";
 import { EffectComposer } from "three/addons/postprocessing/EffectComposer.js";
 import { RenderPass } from "three/addons/postprocessing/RenderPass.js";
 import { OutlinePass } from "three/addons/postprocessing/OutlinePass.js";
-import { ShaderPass, GammaCorrectionShader } from "three/addons/Addons.js";
+import { ShaderPass, GammaCorrectionShader, TransformControls } from "three/addons/Addons.js";
 
-
-export function init(dom, data) {
+export function init(dom, data, onSelected, updateMeshInfo) {
   const scene = new THREE.Scene();
 
   const axesHelper = new THREE.AxesHelper(500);
@@ -63,9 +62,32 @@ export function init(dom, data) {
   const gammaPass = new ShaderPass(GammaCorrectionShader);
   composer.addPass(gammaPass);
 
+  const orbitControls = new OrbitControls(camera, renderer.domElement);
+
+  const transformControls = new TransformControls(camera, renderer.domElement);
+  const transformHelper = transformControls.getHelper();
+  scene.add(transformHelper);
+
+  transformControls.addEventListener('dragging-changed', e => {
+    orbitControls.enabled = !e.value;
+  })
+  transformControls.addEventListener("change", () => {
+    const obj = transformControls.object;
+    if (obj) {
+      if(transformControls.mode === "translate") {
+        updateMeshInfo(obj.name, obj.position, "position");
+      } else if(transformControls.mode === "scale") {
+        updateMeshInfo(obj.name, obj.scale, "scale");
+      } else if(transformControls.mode === "rotate") {
+        updateMeshInfo(obj.name, obj.rotation, "rotation");
+      }
+    }
+  });
+
   function render(time) {
     // renderer.render(scene, camera);
     composer.render();
+    transformControls.update(time);
     requestAnimationFrame(render);
   }
   render();
@@ -86,17 +108,37 @@ export function init(dom, data) {
     const x = (e.offsetX / width) * 2 - 1;
     const rayCaster = new THREE.Raycaster();
     rayCaster.setFromCamera(new THREE.Vector2(x, y), camera);
-    const intersections = rayCaster.intersectObjects(scene.children);
+
+    const objs = scene.children.filter((item) => {
+      return item.name.startsWith("Box") || item.name.startsWith("Cylinder");
+    });
+    const intersections = rayCaster.intersectObjects(objs);
     if (intersections.length > 0) {
       const obj = intersections[0].object;
       // obj.material.color.set("green");
       outlinePass.selectedObjects = [obj];
+      onSelected(obj);
+      transformControls.attach(obj);
     } else {
       outlinePass.selectedObjects = [];
+      onSelected(null);
+      transformControls.detach();
     }
   });
 
-  const controls = new OrbitControls(camera, renderer.domElement);
+  // const controls = new OrbitControls(camera, renderer.domElement);
 
-  return { scene };
+  function setTransformControlsMode(mode) {
+    transformControls.setMode(mode);
+  }
+
+  function transformControlsAttachObj(obj) {
+    if(!obj) {
+      transformControls.detach();
+      return;
+    }
+    transformControls.attach(obj);
+  }
+
+  return { scene, setTransformControlsMode, transformControlsAttachObj };
 }

@@ -1,4 +1,6 @@
 import { create } from "zustand";
+import { persist } from "zustand/middleware";
+
 
 function createBox() {
   const newId = Math.random().toString().slice(2, 8);
@@ -14,32 +16,60 @@ function createBox() {
         color: "orange",
       },
       position: { x: 0, y: 0, z: 0 },
+      scale: { x: 1, y: 1, z: 1 },
+      rotation: { x: 0, y: 0, z: 0 },
     },
   };
 }
 
 function createCylinder() {
-    const newId = Math.random().toString().slice(2, 8);
-    return {
-        id: newId,
-        type: "Cylinder",
-        name: "Cylinder" + newId,
-        props: {
-            radiusTop: 200,
-            radiusBottom: 200,
-            height: 300,
-            material: {
-                color: "orange",
-            },
-            position: { x: 0, y: 0, z: 0 },
-        },
-    }
+  const newId = Math.random().toString().slice(2, 8);
+  return {
+    id: newId,
+    type: "Cylinder",
+    name: "Cylinder" + newId,
+    props: {
+      radiusTop: 200,
+      radiusBottom: 200,
+      height: 300,
+      material: {
+        color: "orange",
+      },
+      position: { x: 0, y: 0, z: 0 },
+      scale: { x: 1, y: 1, z: 1 },
+      rotation: { x: 0, y: 0, z: 0 },
+    },
+  };
 }
 
-const useThreeStore = create((set, get) => {
+const useThreeStore = create(persist((set, get) => {
   return {
     data: {
       meshArr: [],
+    },
+    scene: null,
+    setScene(obj) {
+      set({
+        scene: obj
+      })
+    },
+    selectedObj: null,
+    setSelectedObj(obj) {
+      set({ selectedObj: obj });
+    },
+    selectedObjName: null,
+    setSelectedObjName(name) {
+      set({ selectedObjName: name });
+    },
+    removeMesh(name) {
+      set(state => {
+        return {
+          data: {
+            ...state.data,
+            meshArr: state.data.meshArr.filter(mesh => mesh.name !== name),
+          },
+        }
+      })
     },
     addMesh(type) {
       function addItem(creator) {
@@ -58,8 +88,53 @@ const useThreeStore = create((set, get) => {
         addItem(createCylinder);
       }
     },
+    updateMaterial(name, info){
+      set(state => {
+        return {
+          data: {
+            ...state.data,
+            meshArr: state.data.meshArr.map(mesh => {
+              if(mesh.name === name){
+                mesh.props.material = {
+                  ...mesh.props.material,
+                  ...info
+                }
+              }
+              return mesh;
+            })
+          }
+        }
+      })
+    },
+    updateMeshInfo(name, info, type) {
+      set(state => {
+        return {
+          data: {
+            ...state.data,
+            meshArr: state.data.meshArr.map(mesh => {
+              if (mesh.name === name) {
+                if(type === "position") {
+                  mesh.props.position = info;
+                } else if(type === "scale") {
+                  mesh.props.scale = info;
+                } else if(type === "rotation") {
+                  mesh.props.rotation = {
+                    x: info.x,
+                    y: info.y,
+                    z: info.z,
+                  };
+                }
+              }
+              return mesh;
+            }),
+          },
+        }
+      })
+    }
   };
-});
+}, {
+  name: "threejs-editor",
+}));
 
 const MeshTypes = {
   Box: "Box",
