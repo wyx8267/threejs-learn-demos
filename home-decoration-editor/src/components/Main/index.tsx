@@ -52,6 +52,12 @@ async function loadDoor() {
   }
 }
 
+const textureLoader = new THREE.TextureLoader();
+const floorTexture = textureLoader.load("/floor-texture.png");
+floorTexture.colorSpace = THREE.SRGBColorSpace;
+floorTexture.wrapS = THREE.RepeatWrapping;
+floorTexture.wrapT = THREE.RepeatWrapping;
+floorTexture.repeat.set(0.002, 0.002);
 
 function Main() {
   const scene3DRef = useRef<THREE.Scene>(null);
@@ -79,6 +85,7 @@ function Main() {
   }, []);
 
   useEffect(() => {
+    const house = new THREE.Group();
     const scene = scene3DRef.current;
     const walls = data.walls.map((item) => {
       const shape = new THREE.Shape();
@@ -99,7 +106,7 @@ function Main() {
         path.lineTo(left, bottom);
         shape.holes.push(path);
 
-        const {model, size} = await loadWindow();
+        const { model, size } = await loadWindow();
         model.position.x = win.leftBottomPosition.left + win.width / 2;
         model.position.y = win.leftBottomPosition.bottom + win.height / 2;
         // model.position.z = item.position.z;
@@ -120,7 +127,7 @@ function Main() {
         path.lineTo(left, bottom);
         shape.holes.push(path);
 
-        const {model, size} = await loadDoor();
+        const { model, size } = await loadDoor();
         model.scale.y = door.height / size.y;
         model.scale.z = door.width / size.z;
         model.rotateY(Math.PI / 2);
@@ -128,7 +135,7 @@ function Main() {
         model.position.y = door.leftBottomPosition.bottom + door.height / 2;
 
         wall.add(model);
-      })
+      });
 
       const geometry = new THREE.ExtrudeGeometry(shape, {
         depth: item.depth,
@@ -138,13 +145,67 @@ function Main() {
       });
       const wall = new THREE.Mesh(geometry, material);
       wall.position.set(item.position.x, item.position.y, item.position.z);
-      if(item.rotationY) {
+      if (item.rotationY) {
         wall.rotation.y = item.rotationY;
       }
 
       return wall;
     });
-    scene?.add(...walls);
+    house.add(...walls);
+
+    const floors = data.floors.map((item) => {
+      const shape = new THREE.Shape();
+      shape.moveTo(item.points[0].x, item.points[0].z);
+      for (let i = 1; i < item.points.length; i++) {
+        shape.lineTo(item.points[i].x, item.points[i].z);
+      }
+
+      let texture = floorTexture;
+      if(item.textureUrl){
+        texture = textureLoader.load(item.textureUrl);
+        texture.colorSpace = THREE.SRGBColorSpace;
+        texture.wrapS = THREE.RepeatWrapping;
+        texture.wrapT = THREE.RepeatWrapping;
+        texture.repeat.set(0.002, 0.002);
+      }
+
+      const geometry = new THREE.ShapeGeometry(shape);
+      const material = new THREE.MeshPhongMaterial({
+        map: texture,
+        side: THREE.BackSide,
+      });
+      const floor = new THREE.Mesh(geometry, material);
+      floor.rotateX(Math.PI / 2);
+      return floor;
+    });
+    house.add(...floors);
+
+    const ceilings = data.ceilings.map((item) => {
+      const shape = new THREE.Shape();
+      shape.moveTo(item.points[0].x, item.points[0].z);
+      for (let i = 1; i < item.points.length; i++) {
+        shape.lineTo(item.points[i].x, item.points[i].z);
+      }
+
+      const geometry = new THREE.ShapeGeometry(shape);
+      const material = new THREE.MeshPhongMaterial({
+        color: "#eee",
+        side: THREE.FrontSide,
+      });
+      const ceiling = new THREE.Mesh(geometry, material);
+      ceiling.rotateX(Math.PI / 2);
+      ceiling.position.y = item.height;
+
+      return ceiling;
+    });
+    house.add(...ceilings);
+    scene?.add(house);
+
+    const box3 = new THREE.Box3()
+    box3.expandByObject(house);
+    const center = box3.getCenter(new THREE.Vector3());
+    house.position.set(-center.x, 0, -center.z);
+
   }, [data]);
 
   useEffect(() => {

@@ -1,4 +1,5 @@
 import { create } from "zustand";
+import data from "./house2";
 
 interface Wall {
   position: {
@@ -28,74 +29,33 @@ interface Wall {
   }>;
 }
 
-interface State {
+interface Floor {
+  points: Array<{
+    x: number;
+    z: number;
+  }>;
+  textureUrl?: string;
+}
+
+interface Ceiling {
+  points: Array<{
+    x: number;
+    z: number;
+  }>;
+  height: number;
+}
+
+export interface State {
   data: {
     walls: Array<Wall>;
+    floors: Array<Floor>;
+    ceilings: Array<Ceiling>;
   };
 }
 
 const useHouseStore = create<State>((set, get) => {
   return {
-    data: {
-      walls: [
-        {
-          position: { x: 0, y: 0, z: 0 },
-          width: 800,
-          height: 500,
-          depth: 30,
-          windows: [
-            {
-              leftBottomPosition: {
-                left: 100,
-                bottom: 50,
-              },
-              width: 300,
-              height: 300,
-            },
-          ],
-        },
-        {
-          position: { x: 0, y: 0, z: 800 },
-          width: 800,
-          height: 500,
-          depth: 30,
-          windows: [
-            {
-              leftBottomPosition: {
-                left: 100,
-                bottom: 100,
-              },
-              width: 600,
-              height: 300,
-            },
-          ],
-        },
-        {
-          position: { x: 0, y: 0, z: 0 },
-          width: 800,
-          height: 500,
-          depth: 30,
-          rotationY: -Math.PI / 2,
-        },
-        {
-          position: { x: 800, y: 0, z: 0 },
-          width: 800,
-          height: 500,
-          depth: 30,
-          rotationY: -Math.PI / 2,
-          doors: [
-            {
-              leftBottomPosition: {
-                left: 200,
-                bottom: 20,
-              },
-              width: 300,
-              height: 400,
-            },
-          ],
-        },
-      ],
-    },
+    data
   };
 });
 
