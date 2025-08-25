@@ -11,6 +11,11 @@ interface Wall {
   height: number;
   depth: number;
   rotationY?: number;
+  normal: {
+    x: number;
+    y: number;
+    z: number;
+  };
   windows?: Array<{
     leftBottomPosition: {
       left: number;

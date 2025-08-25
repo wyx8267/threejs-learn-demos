@@ -7,6 +7,8 @@ const data: State["data"] = {
       width: 2800,
       height: 3000,
       depth: 200,
+      windows: [],
+      normal: { x: 0, y: 0, z: 1 },
       doors: [
         {
           leftBottomPosition: {
@@ -23,26 +25,33 @@ const data: State["data"] = {
       width: 5000,
       height: 3000,
       depth: 200,
+      normal: { x: 1, y: 0, z: 0 },
       rotationY: -Math.PI / 2,
+      windows: [],
     },
     {
       position: { x: -5000, y: 0, z: 5000 },
       width: 5000,
       height: 3000,
       depth: 200,
+      normal: { x: 0, y: 0, z: 1 },
+      windows: [],
     },
     {
       position: { x: -5000, y: 0, z: 5000 },
       width: 1880,
       height: 3000,
       depth: 200,
+      normal: { x: 1, y: 0, z: 0 },
       rotationY: -Math.PI / 2,
+      windows: [],
     },
     {
       position: { x: -5200, y: 0, z: 6880 },
       width: 3000,
       height: 3000,
       depth: 200,
+      normal: { x: 0, y: 0, z: -1 },
       windows: [
         {
           leftBottomPosition: {
@@ -56,16 +65,19 @@ const data: State["data"] = {
     },
     {
       position: { x: -2000, y: 0, z: 6880 },
-      width: 1500,
+      width: 1580,
       height: 3000,
       depth: 200,
       rotationY: -Math.PI / 2,
+      normal: { x: 1, y: 0, z: 0 },
+      windows: [],
     },
     {
       position: { x: -2200, y: 0, z: 8260 },
       width: 2880,
       height: 3000,
       depth: 200,
+      normal: { x: 0, y: 0, z: -1 },
       windows: [
         {
           leftBottomPosition: {
@@ -75,7 +87,6 @@ const data: State["data"] = {
           width: 2140,
           height: 2400,
         },
-
       ],
     },
     {
@@ -84,6 +95,7 @@ const data: State["data"] = {
       height: 3000,
       depth: 200,
       rotationY: -Math.PI / 2,
+      normal: { x: -1, y: 0, z: 0 },
       windows: [],
     },
     {
@@ -91,6 +103,7 @@ const data: State["data"] = {
       width: 2000,
       height: 3000,
       depth: 200,
+      normal: { x: 0, y: 0, z: -1 },
       windows: [],
     },
     {
@@ -99,6 +112,7 @@ const data: State["data"] = {
       height: 3000,
       depth: 200,
       rotationY: -Math.PI / 2,
+      normal: { x: -1, y: 0, z: 0 },
       windows: [
         {
           leftBottomPosition: {
@@ -122,22 +136,22 @@ const data: State["data"] = {
   floors: [
     {
       points: [
-        { x: -2000, z: 5200 },
-        { x: -5000, z: 5200 },
-        { x: -5000, z: 7000 },
-        { x: -2000, z: 7000 },
-        { x: -2000, z: 5200 },
+        { x: -2000, z: 5000 },
+        { x: -5000, z: 5000 },
+        { x: -5000, z: 6680 },
+        { x: -2000, z: 6680 },
+        { x: -2000, z: 5000 },
       ],
     },
     {
       points: [
         { x: 0, z: 0 },
-        { x: 2880, z: 0 },
-        { x: 2880, z: 7180 },
-        { x: 880, z: 7180 },
-        { x: 880, z: 8380 },
-        { x: -2000, z: 8380 },
-        { x: -2000, z: 6880 },
+        { x: 2680, z: 0 },
+        { x: 2680, z: 6900 },
+        { x: 680, z: 6900 },
+        { x: 680, z: 8100 },
+        { x: -2000, z: 8100 },
+        { x: -2000, z: 6680 },
         { x: -2000, z: 5000 },
         { x: -2000, z: 5000 },
         { x: 0, z: 5000 },
