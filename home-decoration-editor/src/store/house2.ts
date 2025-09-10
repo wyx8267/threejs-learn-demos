@@ -3,11 +3,12 @@ import type { State } from ".";
 const data: State["data"] = {
   walls: [
     {
-      position: { x: 0, y: 0, z: 0 },
+      position: { x: 2800, y: 0, z: 200 },
       width: 2800,
       height: 3000,
       depth: 200,
       windows: [],
+      rotationY: Math.PI,
       normal: { x: 0, y: 0, z: 1 },
       doors: [
         {
@@ -30,10 +31,11 @@ const data: State["data"] = {
       windows: [],
     },
     {
-      position: { x: -5000, y: 0, z: 5000 },
+      position: { x: 0, y: 0, z: 5200 },
       width: 5000,
       height: 3000,
       depth: 200,
+      rotationY: Math.PI,
       normal: { x: 0, y: 0, z: 1 },
       windows: [],
     },
@@ -90,11 +92,11 @@ const data: State["data"] = {
       ],
     },
     {
-      position: { x: 880, y: 0, z: 7080 },
+      position: { x: 680, y: 0, z: 8480 },
       width: 1380,
       height: 3000,
       depth: 200,
-      rotationY: -Math.PI / 2,
+      rotationY: Math.PI / 2,
       normal: { x: -1, y: 0, z: 0 },
       windows: [],
     },
@@ -107,11 +109,11 @@ const data: State["data"] = {
       windows: [],
     },
     {
-      position: { x: 2880, y: 0, z: 0 },
-      width: 7180,
+      position: { x: 2680, y: 0, z: 7080 },
+      width: 7100,
       height: 3000,
       depth: 200,
-      rotationY: -Math.PI / 2,
+      rotationY: Math.PI / 2,
       normal: { x: -1, y: 0, z: 0 },
       windows: [
         {
@@ -142,6 +144,8 @@ const data: State["data"] = {
         { x: -2000, z: 6680 },
         { x: -2000, z: 5000 },
       ],
+      name: "书房",
+      size: 5.64,
     },
     {
       points: [
@@ -149,8 +153,8 @@ const data: State["data"] = {
         { x: 2680, z: 0 },
         { x: 2680, z: 6900 },
         { x: 680, z: 6900 },
-        { x: 680, z: 8100 },
-        { x: -2000, z: 8100 },
+        { x: 680, z: 8050 },
+        { x: -2000, z: 8050 },
         { x: -2000, z: 6680 },
         { x: -2000, z: 5000 },
         { x: -2000, z: 5000 },
@@ -158,6 +162,8 @@ const data: State["data"] = {
         { x: 0, z: 0 },
       ],
       textureUrl: "./floor-texture2.png",
+      name: "客餐厅",
+      size: 28.89,
     },
   ],
   ceilings: [

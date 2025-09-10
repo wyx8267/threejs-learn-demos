@@ -5,6 +5,7 @@ import { Button } from "antd";
 import * as THREE from "three";
 import { useHouseStore } from "../../store";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
+import SpriteText from "three-spritetext";
 
 let winModel: { model: THREE.Group; size: THREE.Vector3 } | null = null;
 
@@ -308,10 +309,38 @@ function Main() {
         const doorLogo = new THREE.Mesh(geometry, material);
         doorLogo.position.x = left;
         doorLogo.position.z = -100;
+        doorLogo.rotateX(Math.PI);
+        doorLogo.position.y = 200;
         wall.add(doorLogo);
       });
 
       wall.position.set(-item.position.x, -item.position.y, -item.position.z);
+
+      const text = new SpriteText(item.width + '', 200);
+      text.color = 'black';
+      wall.add(text);
+      text.position.x = item.width / 2;
+      text.position.y = 500;
+      text.position.z = -100;
+
+      const bufferGeometry = new THREE.BufferGeometry();
+      bufferGeometry.setFromPoints([
+        new THREE.Vector3(0, -100, 0),
+        new THREE.Vector3(0, 100, 0),
+        new THREE.Vector3(0, 0, 0),
+        new THREE.Vector3(item.width / 2 - 300, 0, 0),
+        new THREE.Vector3(item.width / 2 + 300, 0, 0),
+        new THREE.Vector3(item.width, 0, 0),
+        new THREE.Vector3(item.width, -100, 0),
+        new THREE.Vector3(item.width, 100, 0),
+      ])
+      const lineMaterial = new THREE.LineBasicMaterial({
+        color: '#111',
+      })
+      const line = new THREE.LineSegments(bufferGeometry, lineMaterial);
+      wall.add(line);
+      line.position.z = -100;
+      line.position.y = 500;
 
       if (item.rotationY) {
         wall.rotation.y = item.rotationY;
@@ -347,6 +376,20 @@ function Main() {
       });
       const floor = new THREE.Mesh(geometry, material);
       floor.position.z = -200;
+
+      const text = new SpriteText(item.name + '\n' + item.size + 'm²', 200);
+      text.color = 'black';
+
+      const box3 = new THREE.Box3();
+      box3.expandByObject(floor);
+      const center = box3.getCenter(new THREE.Vector3());
+      text.position.set(center.x, center.y, center.z);
+
+      const helper = new THREE.Box3Helper(box3);
+      floor.add(helper);
+
+      floor.add(text);
+
       floor.rotateX(Math.PI / 2);
       floor.rotateZ(Math.PI);
       return floor;

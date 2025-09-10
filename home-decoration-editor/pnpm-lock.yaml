@@ -20,6 +20,9 @@ importers:
       three:
         specifier: ^0.179.1
         version: 0.179.1
+      three-spritetext:
+        specifier: ^1.10.0
+        version: 1.10.0(three@0.179.1)
       zustand:
         specifier: ^5.0.7
         version: 5.0.7(@types/react@19.1.9)(react@18.3.1)
@@ -1538,6 +1541,12 @@ packages:
   supports-color@7.2.0:
     resolution: {integrity: sha512-qpCAvRl9stuOHveKsn7HncJRvv501qIacKzQlO/+Lwxc9+0q2wLyv4Dfvt80/DPn2pqOBsJdDiogXGR9+OvwRw==}
     engines: {node: '>=8'}
+
+  three-spritetext@1.10.0:
+    resolution: {integrity: sha512-t08iP1FCU1lQh8T5MmCpdijKgas8GDHJE0LqMGBuVu3xqMMpFnEZhTlih7FlxLPQizHIGoumUSpfOlY1GO/Tgg==}
+    engines: {node: '>=12'}
+    peerDependencies:
+      three: '>=0.86.0'
 
   three@0.179.1:
     resolution: {integrity: sha512-5y/elSIQbrvKOISxpwXCR4sQqHtGiOI+MKLc3SsBdDXA2hz3Mdp3X59aUp8DyybMa34aeBwbFTpdoLJaUDEWSw==}
@@ -3216,6 +3225,10 @@ snapshots:
   supports-color@7.2.0:
     dependencies:
       has-flag: 4.0.0
+
+  three-spritetext@1.10.0(three@0.179.1):
+    dependencies:
+      three: 0.179.1
 
   three@0.179.1: {}
 

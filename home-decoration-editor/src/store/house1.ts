@@ -3,10 +3,11 @@ import type { State } from ".";
 const data: State["data"] = {
   walls: [
     {
-      position: { x: 0, y: 0, z: 0 },
+      position: { x: 5000, y: 0, z: 200 },
       width: 5000,
       height: 3000,
       depth: 200,
+      rotationY: Math.PI,
       normal: { x: 0, y: 0, z: 1 },
       windows: [],
     },
@@ -37,11 +38,11 @@ const data: State["data"] = {
       ],
     },
     {
-      position: { x: 5000, y: 0, z: 0 },
-      width: 7200,
+      position: { x: 4800, y: 0, z: 7000 },
+      width: 7000,
       height: 3000,
       depth: 200,
-      rotationY: -Math.PI / 2,
+      rotationY: Math.PI / 2,
       normal: { x: -1, y: 0, z: 0 },
       windows: [],
       doors: [
@@ -65,6 +66,8 @@ const data: State["data"] = {
         { x: 4800, z: 0 },
         { x: 0, z: 0 },
       ],
+      name: "主卧",
+      size: 35,
     },
   ],
   ceilings: [

@@ -40,6 +40,8 @@ interface Floor {
     z: number;
   }>;
   textureUrl?: string;
+  name?: string;
+  size?: number;
 }
 
 interface Ceiling {
