@@ -246,12 +246,71 @@ function Main() {
       shape.lineTo(item.width, 0);
       shape.lineTo(0, 0);
 
+      item.windows?.forEach(async (win) => {
+        const path = new THREE.Path();
+        const { left } = win.leftBottomPosition;
+        path.moveTo(left, 0);
+        path.lineTo(left, item.depth);
+        path.lineTo(left + win.width, item.depth);
+        path.lineTo(left + win.width, 0);
+        path.lineTo(left, 0);
+        shape.holes.push(path);
+      });
+
+      item.doors?.forEach(async (door) => {
+        const path = new THREE.Path();
+        const { left } = door.leftBottomPosition;
+        path.moveTo(left, 0);
+        path.lineTo(left, item.depth);
+        path.lineTo(left + door.width, item.depth);
+        path.lineTo(left + door.width, 0);
+        path.lineTo(left, 0);
+        shape.holes.push(path);
+      });
+
       const geometry = new THREE.ShapeGeometry(shape);
       const material = new THREE.MeshPhongMaterial({
         color: "white",
-        side: THREE.DoubleSide
+        side: THREE.DoubleSide,
       });
       const wall = new THREE.Mesh(geometry, material);
+
+      item.windows?.forEach((win) => {
+        const { left } = win.leftBottomPosition;
+        const geometry = new THREE.PlaneGeometry(win.width, item.depth);
+        const material = new THREE.MeshBasicMaterial({
+          color: "#aaa",
+          transparent: true,
+          opacity: 0.8,
+          side: THREE.DoubleSide,
+        });
+        const winLogo = new THREE.Mesh(geometry, material);
+        winLogo.position.x = left + win.width / 2;
+        winLogo.position.y = 100;
+        wall.add(winLogo);
+      });
+
+      item.doors?.forEach((door) => {
+        const { left } = door.leftBottomPosition;
+
+        const shape = new THREE.Shape();
+        shape.moveTo(0, 0);
+        shape.arc(0, 0, door.width, 0, Math.PI / 2);
+        shape.lineTo(0, 0);
+
+        const geometry = new THREE.ShapeGeometry(shape);
+        const material = new THREE.MeshBasicMaterial({
+          color: "#aaa",
+          transparent: true,
+          opacity: 0.8,
+          side: THREE.DoubleSide,
+        });
+        const doorLogo = new THREE.Mesh(geometry, material);
+        doorLogo.position.x = left;
+        doorLogo.position.z = -100;
+        wall.add(doorLogo);
+      });
+
       wall.position.set(-item.position.x, -item.position.y, -item.position.z);
 
       if (item.rotationY) {
@@ -273,7 +332,7 @@ function Main() {
       }
 
       let texture = floorTexture;
-      if(item.textureUrl) {
+      if (item.textureUrl) {
         texture = textureLoader.load(item.textureUrl);
         texture.colorSpace = THREE.SRGBColorSpace;
         texture.wrapS = THREE.RepeatWrapping;
