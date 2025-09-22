@@ -7,12 +7,12 @@ import { useHouseStore } from "../../store";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import SpriteText from "three-spritetext";
 
-let winModel: { model: THREE.Group; size: THREE.Vector3 } | null = null;
+// let winModel: { model: THREE.Group; size: THREE.Vector3 } | null = null;
 
 async function loadWindow() {
-  if (winModel !== null) {
-    return winModel;
-  } else {
+  // if (winModel !== null) {
+  //   return winModel;
+  // } else {
     const group = new THREE.Group();
     const loader = new GLTFLoader();
     const gltf = await loader.loadAsync("/window.glb");
@@ -22,20 +22,23 @@ async function loadWindow() {
     box.expandByObject(gltf.scene);
 
     const size = box.getSize(new THREE.Vector3());
-    winModel = {
+    // winModel = {
+    //   model: group,
+    //   size,
+    // };
+    return {
       model: group,
       size,
     };
-    return winModel;
-  }
+  // }
 }
 
-let doorModel: { model: THREE.Group; size: THREE.Vector3 } | null = null;
+// let doorModel: { model: THREE.Group; size: THREE.Vector3 } | null = null;
 
 async function loadDoor() {
-  if (doorModel !== null) {
-    return doorModel;
-  } else {
+  // if (doorModel !== null) {
+  //   return doorModel;
+  // } else {
     const group = new THREE.Group();
     const loader = new GLTFLoader();
     const gltf = await loader.loadAsync("/door.glb");
@@ -45,12 +48,15 @@ async function loadDoor() {
     box.expandByObject(gltf.scene);
 
     const size = box.getSize(new THREE.Vector3());
-    doorModel = {
+    // doorModel = {
+    //   model: group,
+    //   size,
+    // };
+    return {
       model: group,
       size,
     };
-    return doorModel;
-  }
+  // }
 }
 
 const textureLoader = new THREE.TextureLoader();
@@ -109,6 +115,23 @@ function Main() {
       dom!.innerHTML = "";
     };
   }, []);
+
+  useEffect(() => {
+    const scene1 = scene2DRef.current;
+    const scene2 = scene3DRef.current;
+    const house1 = scene1?.getObjectByName("house");
+    const house2 = scene2?.getObjectByName("house");
+
+    house1?.parent?.remove(house1);
+    house2?.parent?.remove(house2);
+
+    house1?.traverse(item => {
+      const obj = item as THREE.Mesh;
+      if(obj.isMesh){
+        obj.geometry.dispose();
+      }
+    })
+  }, [data]);
 
   useEffect(() => {
     const house = new THREE.Group();
@@ -234,6 +257,7 @@ function Main() {
     box3.expandByObject(house);
     const center = box3.getCenter(new THREE.Vector3());
     house.position.set(-center.x, 0, -center.z);
+    house.name = "house";
   }, [data]);
 
   useEffect(() => {
@@ -405,6 +429,7 @@ function Main() {
     box3.expandByObject(house);
     const center = box3.getCenter(new THREE.Vector3());
     house.position.set(-center.x, 0, -center.z);
+    house.name = "house";
   }, [data]);
 
   const [curMode, setCurMode] = useState("2d");
