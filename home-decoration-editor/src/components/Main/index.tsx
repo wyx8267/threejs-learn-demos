@@ -258,6 +258,28 @@ function Main() {
     const center = box3.getCenter(new THREE.Vector3());
     house.position.set(-center.x, 0, -center.z);
     house.name = "house";
+
+    // const gltfLoader = new GLTFLoader();
+    // gltfLoader.load("./dining-table.glb", (gltf) => {
+    //   house.add(gltf.scene);
+    //   gltf.scene.position.x = 1500;
+    //   gltf.scene.position.z = 3000;
+    //   gltf.scene.rotateY(Math.PI / 2);
+    // })
+    data.furnitures.forEach(furniture => {
+      const gltfLoader = new GLTFLoader();
+      gltfLoader.load(furniture.modelUrl, (gltf) => {
+        house.add(gltf.scene);
+        gltf.scene.position.set(
+          furniture.position.x,
+          furniture.position.y,
+          furniture.position.z,
+        );
+        gltf.scene.rotation.x = furniture.rotation.x;
+        gltf.scene.rotation.y = furniture.rotation.y;
+        gltf.scene.rotation.z = furniture.rotation.z;
+      })
+    })
   }, [data]);
 
   useEffect(() => {

@@ -82,6 +82,21 @@ const data: State["data"] = {
       height: 3000,
     },
   ],
+  furnitures: [
+    {
+      modelUrl: './dining-table.glb',
+      position: {
+        x: 1500,
+        y: 0,
+        z: 3000
+      },
+      rotation: {
+        x: 0,
+        y: Math.PI / 2,
+        z: 0
+      }
+    }
+  ]
 };
 
 export default data;

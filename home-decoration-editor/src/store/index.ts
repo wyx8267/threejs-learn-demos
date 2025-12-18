@@ -52,11 +52,26 @@ interface Ceiling {
   height: number;
 }
 
+interface Furniture {
+  modelUrl: string,
+  position: {
+    x: number,
+    y: number,
+    z: number
+  },
+  rotation: {
+    x: number,
+    y: number,
+    z: number
+  },
+}
+
 export interface State {
   data: {
-    walls: Array<Wall>;
-    floors: Array<Floor>;
-    ceilings: Array<Ceiling>;
+    walls: Array<Wall>,
+    floors: Array<Floor>,
+    ceilings: Array<Ceiling>,
+    furnitures: Array<Furniture>
   };
 }
 
