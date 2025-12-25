@@ -70,6 +70,7 @@ function Main() {
   const scene3DRef = useRef<THREE.Scene>(null);
   const scene2DRef = useRef<THREE.Scene>(null);
   const cameraRef = useRef<THREE.Camera>(null);
+  const changeModeRef = useRef<(isTranslate: boolean) => void>(null);
 
   const { data } = useHouseStore();
 
@@ -96,9 +97,10 @@ function Main() {
 
   useEffect(() => {
     const dom = document.getElementById("threejs-3d-container");
-    const { scene, camera } = init3D(dom!, wallsVisibilityCalc);
+    const { scene, camera, changeMode } = init3D(dom!, wallsVisibilityCalc);
     scene3DRef.current = scene;
     cameraRef.current = camera;
+    changeModeRef.current = changeMode;
 
     return () => {
       if (dom) {
@@ -259,17 +261,12 @@ function Main() {
     house.position.set(-center.x, 0, -center.z);
     house.name = "house";
 
-    // const gltfLoader = new GLTFLoader();
-    // gltfLoader.load("./dining-table.glb", (gltf) => {
-    //   house.add(gltf.scene);
-    //   gltf.scene.position.x = 1500;
-    //   gltf.scene.position.z = 3000;
-    //   gltf.scene.rotateY(Math.PI / 2);
-    // })
+    const furnitures = new THREE.Group();
+    furnitures.name = "furnitures";
     data.furnitures.forEach(furniture => {
       const gltfLoader = new GLTFLoader();
       gltfLoader.load(furniture.modelUrl, (gltf) => {
-        house.add(gltf.scene);
+        furnitures.add(gltf.scene);
         gltf.scene.position.set(
           furniture.position.x,
           furniture.position.y,
@@ -278,8 +275,13 @@ function Main() {
         gltf.scene.rotation.x = furniture.rotation.x;
         gltf.scene.rotation.y = furniture.rotation.y;
         gltf.scene.rotation.z = furniture.rotation.z;
+
+        gltf.scene.traverse(obj => {
+          (obj as any).target = gltf.scene;
+        })
       })
     })
+    house.add(furnitures);
   }, [data]);
 
   useEffect(() => {
@@ -466,6 +468,13 @@ function Main() {
         </Button>
         <Button type={curMode === "3d" ? "primary" : "default"} onClick={() => setCurMode("3d")}>
           3D
+        </Button>
+
+        <Button type="default" onClick={() => changeModeRef.current?.(true)}>
+          平移
+        </Button>
+        <Button type="default" onClick={() => changeModeRef.current?.(false)}>
+          旋转
         </Button>
       </div>
     </div>

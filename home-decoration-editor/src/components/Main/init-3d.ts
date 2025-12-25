@@ -1,5 +1,6 @@
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
+import { TransformControls } from "three/addons/controls/TransformControls.js";
 
 export function init3D(dom: HTMLElement, wallsVisibilityCalc: () => void) {
   const scene = new THREE.Scene();
@@ -7,7 +8,7 @@ export function init3D(dom: HTMLElement, wallsVisibilityCalc: () => void) {
   const axesHelper = new THREE.AxesHelper(5000);
   scene.add(axesHelper);
 
-  const gridHelper = new THREE.GridHelper(100000, 500, 'white', 'white');
+  const gridHelper = new THREE.GridHelper(100000, 500, "white", "white");
   gridHelper.position.y = -100;
   scene.add(gridHelper);
 
@@ -31,6 +32,19 @@ export function init3D(dom: HTMLElement, wallsVisibilityCalc: () => void) {
   renderer.setSize(width, height);
   renderer.setClearColor("skyblue");
 
+  const controls = new OrbitControls(camera, renderer.domElement);
+
+  const transformControls = new TransformControls(camera, renderer.domElement);
+  const transformHelper = transformControls.getHelper();
+  scene.add(transformHelper);
+  transformControls.mode = "rotate";
+  transformControls.showX = false;
+  transformControls.showZ = false;
+
+  transformControls.addEventListener("dragging-changed", function (event) {
+    controls.enabled = !event.value;
+  });
+
   function render() {
     renderer.render(scene, camera);
     requestAnimationFrame(render);
@@ -50,10 +64,8 @@ export function init3D(dom: HTMLElement, wallsVisibilityCalc: () => void) {
     camera.updateProjectionMatrix();
   };
 
-  const controls = new OrbitControls(camera, renderer.domElement);
-
   const edges: Array<THREE.Line> = [];
-  renderer.domElement.addEventListener('click', e => {
+  renderer.domElement.addEventListener("click", (e) => {
     const y = -((e.offsetY / height) * 2 - 1);
     const x = (e.offsetX / width) * 2 - 1;
 
@@ -62,23 +74,46 @@ export function init3D(dom: HTMLElement, wallsVisibilityCalc: () => void) {
 
     const intersects = rayCaster.intersectObjects(scene.children);
 
-    edges.forEach(item => {
+    const furnitures = scene.getObjectByName("furnitures")!;
+    const intersections2 = rayCaster.intersectObjects(furnitures.children);
+
+    if (intersections2.length) {
+      const obj = intersections2[0].object as any;
+      if (obj.target) {
+        transformControls.attach(obj.target);
+      }
+    } else {
+      transformControls.detach();
+    }
+
+    edges.forEach((item) => {
       item.parent?.remove(item);
-    })
+    });
     if (intersects.length > 0) {
       const obj = intersects[0].object as THREE.Mesh;
       if (obj.isMesh) {
         const geometry = new THREE.EdgesGeometry(obj.geometry);
         if (geometry instanceof THREE.BufferGeometry) {
-          const material = new THREE.LineBasicMaterial({ color: 'blue' });
+          const material = new THREE.LineBasicMaterial({ color: "blue" });
           const line = new THREE.LineSegments(geometry, material);
           obj.add(line);
           edges.push(line);
         }
       }
     }
+  });
 
-  })
+  function changeMode(isTranslate: boolean) {
+    if (isTranslate) {
+      transformControls.mode = "translate";
+      transformControls.showX = true;
+      transformControls.showZ = true;
+    } else {
+      transformControls.mode = "rotate";
+      transformControls.showX = false;
+      transformControls.showZ = false;
+    }
+  }
 
-  return { scene, camera };
+  return { scene, camera, changeMode };
 }
