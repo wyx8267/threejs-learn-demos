@@ -36,6 +36,8 @@ export function init3D(dom: HTMLElement, wallsVisibilityCalc: () => void, update
   const controls = new OrbitControls(camera, renderer.domElement);
 
   const transformControls = new TransformControls(camera, renderer.domElement);
+  transformControls.showY = false;
+
   const transformHelper = transformControls.getHelper();
   scene.add(transformHelper);
   transformControls.mode = "rotate";
@@ -49,9 +51,9 @@ export function init3D(dom: HTMLElement, wallsVisibilityCalc: () => void, update
   transformControls.addEventListener("change", () => {
     const obj = transformControls.object;
     if (obj) {
-      if(transformControls.mode === 'translate') {
+      if (transformControls.mode === "translate") {
         updateFurniture(obj.name, "position", obj.position);
-      } else if (transformControls.mode === 'rotate') {
+      } else if (transformControls.mode === "rotate") {
         updateFurniture(obj.name, "rotation", new THREE.Vector3(obj.rotation.x, obj.rotation.y, obj.rotation.z));
       }
     }
@@ -120,10 +122,12 @@ export function init3D(dom: HTMLElement, wallsVisibilityCalc: () => void, update
       transformControls.mode = "translate";
       transformControls.showX = true;
       transformControls.showZ = true;
+      transformControls.showY = false;
     } else {
       transformControls.mode = "rotate";
       transformControls.showX = false;
       transformControls.showZ = false;
+      transformControls.showY = true;
     }
   }
 

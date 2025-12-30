@@ -13,23 +13,23 @@ async function loadWindow() {
   // if (winModel !== null) {
   //   return winModel;
   // } else {
-    const group = new THREE.Group();
-    const loader = new GLTFLoader();
-    const gltf = await loader.loadAsync("/window.glb");
-    group.add(gltf.scene);
+  const group = new THREE.Group();
+  const loader = new GLTFLoader();
+  const gltf = await loader.loadAsync("/window.glb");
+  group.add(gltf.scene);
 
-    const box = new THREE.Box3();
-    box.expandByObject(gltf.scene);
+  const box = new THREE.Box3();
+  box.expandByObject(gltf.scene);
 
-    const size = box.getSize(new THREE.Vector3());
-    // winModel = {
-    //   model: group,
-    //   size,
-    // };
-    return {
-      model: group,
-      size,
-    };
+  const size = box.getSize(new THREE.Vector3());
+  // winModel = {
+  //   model: group,
+  //   size,
+  // };
+  return {
+    model: group,
+    size,
+  };
   // }
 }
 
@@ -39,23 +39,23 @@ async function loadDoor() {
   // if (doorModel !== null) {
   //   return doorModel;
   // } else {
-    const group = new THREE.Group();
-    const loader = new GLTFLoader();
-    const gltf = await loader.loadAsync("/door.glb");
-    group.add(gltf.scene);
+  const group = new THREE.Group();
+  const loader = new GLTFLoader();
+  const gltf = await loader.loadAsync("/door.glb");
+  group.add(gltf.scene);
 
-    const box = new THREE.Box3();
-    box.expandByObject(gltf.scene);
+  const box = new THREE.Box3();
+  box.expandByObject(gltf.scene);
 
-    const size = box.getSize(new THREE.Vector3());
-    // doorModel = {
-    //   model: group,
-    //   size,
-    // };
-    return {
-      model: group,
-      size,
-    };
+  const size = box.getSize(new THREE.Vector3());
+  // doorModel = {
+  //   model: group,
+  //   size,
+  // };
+  return {
+    model: group,
+    size,
+  };
   // }
 }
 
@@ -71,6 +71,7 @@ function Main() {
   const scene2DRef = useRef<THREE.Scene>(null);
   const cameraRef = useRef<THREE.Camera>(null);
   const changeModeRef = useRef<(isTranslate: boolean) => void>(null);
+  const changeMode2DRef = useRef<(isTranslate: boolean) => void>(null);
 
   const { data, updateFurniture } = useHouseStore();
 
@@ -110,8 +111,9 @@ function Main() {
   }, []);
   useEffect(() => {
     const dom = document.getElementById("threejs-2d-container");
-    const { scene } = init2D(dom!);
+    const { scene, changeMode } = init2D(dom!, updateFurniture);
     scene2DRef.current = scene;
+    changeMode2DRef.current = changeMode;
 
     return () => {
       dom!.innerHTML = "";
@@ -124,41 +126,37 @@ function Main() {
     const house1 = scene1?.getObjectByName("house");
     const house2 = scene2?.getObjectByName("house");
 
-    if(data.walls.length) {
+    if (data.walls.length) {
       return;
     }
 
     house1?.parent?.remove(house1);
     house2?.parent?.remove(house2);
 
-    house1?.traverse(item => {
+    house1?.traverse((item) => {
       const obj = item as THREE.Mesh;
-      if(obj.isMesh){
+      if (obj.isMesh) {
         obj.geometry.dispose();
       }
-    })
+    });
   }, [data]);
 
   useEffect(() => {
     const house = new THREE.Group();
     const scene = scene3DRef.current;
 
-    const houseObj = scene?.getObjectByName('house');
-    if(houseObj) {
-      data.furnitures.forEach(furniture => {
+    const houseObj = scene?.getObjectByName("house");
+    if (houseObj) {
+      data.furnitures.forEach((furniture) => {
         const obj = houseObj.getObjectByName(furniture.id);
 
-        if(obj) {
-          obj.position.set(
-            furniture.position.x,
-            furniture.position.y,
-            furniture.position.z,
-          );
+        if (obj) {
+          obj.position.set(furniture.position.x, furniture.position.y, furniture.position.z);
           obj.rotation.x = furniture.rotation.x;
           obj.rotation.y = furniture.rotation.y;
           obj.rotation.z = furniture.rotation.z;
         }
-      })
+      });
       return;
     }
 
@@ -287,31 +285,42 @@ function Main() {
 
     const furnitures = new THREE.Group();
     furnitures.name = "furnitures";
-    data.furnitures.forEach(furniture => {
+    data.furnitures.forEach((furniture) => {
       const gltfLoader = new GLTFLoader();
       gltfLoader.load(furniture.modelUrl, (gltf) => {
         furnitures.add(gltf.scene);
-        gltf.scene.position.set(
-          furniture.position.x,
-          furniture.position.y,
-          furniture.position.z,
-        );
+        gltf.scene.position.set(furniture.position.x, furniture.position.y, furniture.position.z);
         gltf.scene.rotation.x = furniture.rotation.x;
         gltf.scene.rotation.y = furniture.rotation.y;
         gltf.scene.rotation.z = furniture.rotation.z;
 
-        gltf.scene.traverse(obj => {
+        gltf.scene.traverse((obj) => {
           (obj as any).target = gltf.scene;
-        })
+        });
         gltf.scene.name = furniture.id;
-      })
-    })
+      });
+    });
     house.add(furnitures);
   }, [data]);
 
   useEffect(() => {
     const scene = scene2DRef.current!;
     const house = new THREE.Group();
+
+    const houseObj = scene.getObjectByName("house");
+    if (houseObj) {
+      data.furnitures.forEach((furniture) => {
+        const obj = houseObj.getObjectByName(furniture.id);
+        if (obj) {
+          obj.position.set(-furniture.position.x, -furniture.position.y, -furniture.position.z);
+          obj.rotation.x = furniture.rotation.x;
+          obj.rotation.y = furniture.rotation.y;
+          obj.rotation.z = furniture.rotation.z;
+        }
+      });
+      return;
+    }
+
     const walls = data.walls.map((item, index) => {
       const shape = new THREE.Shape();
       shape.moveTo(0, 0);
@@ -389,8 +398,8 @@ function Main() {
 
       wall.position.set(-item.position.x, -item.position.y, -item.position.z);
 
-      const text = new SpriteText(item.width + '', 200);
-      text.color = 'black';
+      const text = new SpriteText(item.width + "", 200);
+      text.color = "black";
       wall.add(text);
       text.position.x = item.width / 2;
       text.position.y = 500;
@@ -406,10 +415,10 @@ function Main() {
         new THREE.Vector3(item.width, 0, 0),
         new THREE.Vector3(item.width, -100, 0),
         new THREE.Vector3(item.width, 100, 0),
-      ])
+      ]);
       const lineMaterial = new THREE.LineBasicMaterial({
-        color: '#111',
-      })
+        color: "#111",
+      });
       const line = new THREE.LineSegments(bufferGeometry, lineMaterial);
       wall.add(line);
       line.position.z = -100;
@@ -450,8 +459,8 @@ function Main() {
       const floor = new THREE.Mesh(geometry, material);
       floor.position.z = -200;
 
-      const text = new SpriteText(item.name + '\n' + item.size + 'm²', 200);
-      text.color = 'black';
+      const text = new SpriteText(item.name + "\n" + item.size + "m²", 200);
+      text.color = "black";
 
       const box3 = new THREE.Box3();
       box3.expandByObject(floor);
@@ -479,6 +488,29 @@ function Main() {
     const center = box3.getCenter(new THREE.Vector3());
     house.position.set(-center.x, 0, -center.z);
     house.name = "house";
+
+    const furnitures = new THREE.Group();
+    furnitures.name = "furnitures";
+    data.furnitures.forEach((furniture) => {
+      const gltfLoader = new GLTFLoader();
+      gltfLoader.load(furniture.modelUrl, (gltf) => {
+        furnitures.add(gltf.scene);
+
+        gltf.scene.position.set(-furniture.position.x, -furniture.position.y, -furniture.position.z);
+        gltf.scene.rotation.x = furniture.rotation.x;
+        gltf.scene.rotation.y = furniture.rotation.y;
+        gltf.scene.rotation.z = furniture.rotation.z;
+
+        gltf.scene.traverse((obj) => {
+          (obj as any).target = gltf.scene;
+        });
+        gltf.scene.name = furniture.id;
+      });
+    });
+    house.add(furnitures);
+
+    const helper = new THREE.AxesHelper(30000);
+    house.add(helper);
   }, [data]);
 
   const [curMode, setCurMode] = useState("2d");
@@ -495,10 +527,16 @@ function Main() {
           3D
         </Button>
 
-        <Button type="default" onClick={() => changeModeRef.current?.(true)}>
+        <Button type="default" onClick={() => {
+          changeModeRef.current?.(true)
+          changeMode2DRef.current?.(true)
+        }}>
           平移
         </Button>
-        <Button type="default" onClick={() => changeModeRef.current?.(false)}>
+        <Button type="default" onClick={() => {
+          changeModeRef.current?.(false)
+          changeMode2DRef.current?.(false)
+        }}>
           旋转
         </Button>
       </div>

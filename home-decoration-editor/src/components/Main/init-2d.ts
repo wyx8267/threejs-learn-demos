@@ -1,7 +1,9 @@
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
+import type { Action } from "../../store";
+import { TransformControls } from "three/examples/jsm/Addons.js";
 
-export function init2D(dom: HTMLElement) {
+export function init2D(dom: HTMLElement, updateFurniture: Action["updateFurniture"]) {
   const scene = new THREE.Scene();
 
   const axesHelper = new THREE.AxesHelper(50000);
@@ -31,6 +33,27 @@ export function init2D(dom: HTMLElement) {
   controls.enableRotate = false;
   // controls.target.set(200, 0, -100);
 
+  const transformControls = new TransformControls(camera, renderer.domElement);
+  transformControls.showY = false;
+
+  const transformHelper = transformControls.getHelper();
+  scene.add(transformHelper);
+
+  transformControls.addEventListener("dragging-changed", function (event) {
+    controls.enabled = !event.value;
+  });
+
+  transformControls.addEventListener("change", () => {
+    const obj = transformControls.object;
+    if (obj) {
+      if (transformControls.mode === "translate") {
+        updateFurniture(obj.name, "position", new THREE.Vector3(-obj.position.x, -obj.position.y, -obj.position.z));
+      } else if (transformControls.mode === "rotate") {
+        updateFurniture(obj.name, "rotation", new THREE.Vector3(obj.rotation.x, obj.rotation.y, obj.rotation.z));
+      }
+    }
+  });
+
   function render() {
     controls.update();
     renderer.render(scene, camera);
@@ -49,5 +72,37 @@ export function init2D(dom: HTMLElement) {
     camera.updateProjectionMatrix();
   };
 
-  return { scene };
+  renderer.domElement.addEventListener("click", (e) => {
+    const y = -((e.offsetY / height) * 2 - 1);
+    const x = (e.offsetX / width) * 2 - 1;
+    const raycaster = new THREE.Raycaster();
+    raycaster.setFromCamera(new THREE.Vector2(x, y), camera);
+
+    const furnitures = scene.getObjectByName("furnitures")!;
+    const intersections2 = raycaster.intersectObjects(furnitures.children);
+    if (intersections2.length) {
+      const obj = intersections2[0].object as any;
+      if (obj.target) {
+        transformControls.attach(obj.target);
+      }
+    } else {
+      transformControls.detach();
+    }
+  });
+
+  function changeMode(isTranslate: boolean) {
+    if (isTranslate) {
+      transformControls.mode = "translate";
+      transformControls.showX = true;
+      transformControls.showZ = true;
+      transformControls.showY = false;
+    } else {
+      transformControls.mode = "rotate";
+      transformControls.showX = false;
+      transformControls.showZ = false;
+      transformControls.showY = true;
+    }
+  }
+
+  return { scene, changeMode };
 }
