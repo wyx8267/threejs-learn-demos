@@ -1,5 +1,7 @@
-import { create } from "zustand";
+import { create, type StateCreator } from "zustand";
 import data from "./house2";
+import type { Vector3 } from "three";
+import {persist} from 'zustand/middleware';
 
 interface Wall {
   position: {
@@ -53,44 +55,72 @@ interface Ceiling {
 }
 
 interface Furniture {
-  modelUrl: string,
+  id: string;
+  modelUrl: string;
   position: {
-    x: number,
-    y: number,
-    z: number
-  },
+    x: number;
+    y: number;
+    z: number;
+  };
   rotation: {
-    x: number,
-    y: number,
-    z: number
-  },
+    x: number;
+    y: number;
+    z: number;
+  };
 }
 
 export interface State {
   data: {
-    walls: Array<Wall>,
-    floors: Array<Floor>,
-    ceilings: Array<Ceiling>,
-    furnitures: Array<Furniture>
+    walls: Array<Wall>;
+    floors: Array<Floor>;
+    ceilings: Array<Ceiling>;
+    furnitures: Array<Furniture>;
   };
 }
 
 export interface Action {
-  setData(data: State['data']): void;
+  setData(data: State["data"]): void;
+  updateFurniture(id: string, type: "position" | "rotation", info: Vector3): void;
 }
 
-const useHouseStore = create<State & Action>((set, get) => {
-  return {
+const stateCreator: StateCreator<State & Action> = (set, get) => {
+    return {
     data,
     setData(data) {
-      set(state => {
+      set((state) => {
         return {
           ...state,
-          data
-        }
-      })
-    }
+          data,
+        };
+      });
+    },
+    updateFurniture(id, type, info) {
+      set((state) => {
+        return {
+          ...state,
+          data: {
+            ...state.data,
+            furnitures: state.data.furnitures.map((item) => {
+              if (item.id === id) {
+                if(type === 'position') {
+                  item.position.x = info.x;
+                  item.position.y = info.y;
+                  item.position.z = info.z;
+                } else {
+                  item.rotation.x = info.x;
+                  item.rotation.y = info.y;
+                  item.rotation.z = info.z;
+                }
+              }
+              return item;
+            }),
+          },
+        };
+      });
+    },
   };
-});
+}
+
+const useHouseStore = create<State & Action>()(persist(stateCreator, {name: 'house'}));
 
 export { useHouseStore };

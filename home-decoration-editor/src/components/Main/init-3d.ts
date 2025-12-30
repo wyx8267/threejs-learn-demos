@@ -1,8 +1,9 @@
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import { TransformControls } from "three/addons/controls/TransformControls.js";
+import type { Action } from "../../store";
 
-export function init3D(dom: HTMLElement, wallsVisibilityCalc: () => void) {
+export function init3D(dom: HTMLElement, wallsVisibilityCalc: () => void, updateFurniture: Action["updateFurniture"]) {
   const scene = new THREE.Scene();
 
   const axesHelper = new THREE.AxesHelper(5000);
@@ -43,6 +44,17 @@ export function init3D(dom: HTMLElement, wallsVisibilityCalc: () => void) {
 
   transformControls.addEventListener("dragging-changed", function (event) {
     controls.enabled = !event.value;
+  });
+
+  transformControls.addEventListener("change", () => {
+    const obj = transformControls.object;
+    if (obj) {
+      if(transformControls.mode === 'translate') {
+        updateFurniture(obj.name, "position", obj.position);
+      } else if (transformControls.mode === 'rotate') {
+        updateFurniture(obj.name, "rotation", new THREE.Vector3(obj.rotation.x, obj.rotation.y, obj.rotation.z));
+      }
+    }
   });
 
   function render() {

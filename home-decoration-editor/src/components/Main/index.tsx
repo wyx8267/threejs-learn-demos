@@ -72,7 +72,7 @@ function Main() {
   const cameraRef = useRef<THREE.Camera>(null);
   const changeModeRef = useRef<(isTranslate: boolean) => void>(null);
 
-  const { data } = useHouseStore();
+  const { data, updateFurniture } = useHouseStore();
 
   function wallsVisibilityCalc() {
     const camera = cameraRef.current;
@@ -97,7 +97,7 @@ function Main() {
 
   useEffect(() => {
     const dom = document.getElementById("threejs-3d-container");
-    const { scene, camera, changeMode } = init3D(dom!, wallsVisibilityCalc);
+    const { scene, camera, changeMode } = init3D(dom!, wallsVisibilityCalc, updateFurniture);
     scene3DRef.current = scene;
     cameraRef.current = camera;
     changeModeRef.current = changeMode;
@@ -124,6 +124,10 @@ function Main() {
     const house1 = scene1?.getObjectByName("house");
     const house2 = scene2?.getObjectByName("house");
 
+    if(data.walls.length) {
+      return;
+    }
+
     house1?.parent?.remove(house1);
     house2?.parent?.remove(house2);
 
@@ -138,6 +142,26 @@ function Main() {
   useEffect(() => {
     const house = new THREE.Group();
     const scene = scene3DRef.current;
+
+    const houseObj = scene?.getObjectByName('house');
+    if(houseObj) {
+      data.furnitures.forEach(furniture => {
+        const obj = houseObj.getObjectByName(furniture.id);
+
+        if(obj) {
+          obj.position.set(
+            furniture.position.x,
+            furniture.position.y,
+            furniture.position.z,
+          );
+          obj.rotation.x = furniture.rotation.x;
+          obj.rotation.y = furniture.rotation.y;
+          obj.rotation.z = furniture.rotation.z;
+        }
+      })
+      return;
+    }
+
     const walls = data.walls.map((item, index) => {
       const shape = new THREE.Shape();
       shape.moveTo(0, 0);
@@ -279,6 +303,7 @@ function Main() {
         gltf.scene.traverse(obj => {
           (obj as any).target = gltf.scene;
         })
+        gltf.scene.name = furniture.id;
       })
     })
     house.add(furnitures);

@@ -196,6 +196,7 @@ const data: State["data"] = {
   ],
   furnitures: [
     {
+      id: 'furniture111',
       modelUrl: './dining-table.glb',
       position: {
         x: 1500,
