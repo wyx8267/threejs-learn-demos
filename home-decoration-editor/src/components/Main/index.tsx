@@ -72,7 +72,10 @@ function Main() {
   const cameraRef = useRef<THREE.Camera>(null);
   const changeModeRef = useRef<(isTranslate: boolean) => void>(null);
   const changeMode2DRef = useRef<(isTranslate: boolean) => void>(null);
+  const changeSize3DRef = useRef<(isBig: boolean) => void>(null);
+  const changeSize2DRef = useRef<(isBig: boolean) => void>(null);
 
+  const [curMode, setCurMode] = useState("2d");
   const { data, updateFurniture } = useHouseStore();
 
   function wallsVisibilityCalc() {
@@ -98,10 +101,11 @@ function Main() {
 
   useEffect(() => {
     const dom = document.getElementById("threejs-3d-container");
-    const { scene, camera, changeMode } = init3D(dom!, wallsVisibilityCalc, updateFurniture);
+    const { scene, camera, changeMode, changeSize } = init3D(dom!, wallsVisibilityCalc, updateFurniture);
     scene3DRef.current = scene;
     cameraRef.current = camera;
     changeModeRef.current = changeMode;
+    changeSize3DRef.current = changeSize;
 
     return () => {
       if (dom) {
@@ -109,16 +113,31 @@ function Main() {
       }
     };
   }, []);
+
   useEffect(() => {
     const dom = document.getElementById("threejs-2d-container");
-    const { scene, changeMode } = init2D(dom!, updateFurniture);
+    const { scene, changeMode, changeSize } = init2D(dom!, updateFurniture);
     scene2DRef.current = scene;
     changeMode2DRef.current = changeMode;
+    changeSize2DRef.current = changeSize;
 
     return () => {
       dom!.innerHTML = "";
     };
   }, []);
+
+  useEffect(() => {
+    const changeSize3D = changeSize3DRef.current!;
+    const changeSize2D = changeSize2DRef.current!;
+
+    if(curMode === '2d') {
+      changeSize3D(false);
+      changeSize2D(true);
+    } else {
+      changeSize3D(true);
+      changeSize2D(false);
+    }
+  }, [curMode]);
 
   useEffect(() => {
     const scene1 = scene2DRef.current;
@@ -513,12 +532,10 @@ function Main() {
     house.add(helper);
   }, [data]);
 
-  const [curMode, setCurMode] = useState("2d");
-
   return (
     <div className="Main">
-      <div id="threejs-3d-container" style={{ display: curMode === "3d" ? "block" : "none" }}></div>
-      <div id="threejs-2d-container" style={{ display: curMode === "2d" ? "block" : "none" }}></div>
+      <div id="threejs-3d-container" style={{ zIndex: curMode === "2d" ? 2 : 1 }}></div>
+      <div id="threejs-2d-container" style={{ zIndex: curMode === "3d" ? 2 : 1 }}></div>
       <div className="mode-change-btns">
         <Button type={curMode === "2d" ? "primary" : "default"} onClick={() => setCurMode("2d")}>
           2D
