@@ -43,20 +43,64 @@ function Menu() {
       />
       {key === "户型" ? (
         <div>
-          <Popconfirm title="提醒" description="切换户型将清空数据，是否继续？" onConfirm={() => setData(data1)} okText="是" cancelText="否">
-            <Card hoverable style={{ width: 200, margin: 20 }} cover={<Image width={200} src="./house1.png" />}>
+          <Popconfirm
+            title="提醒"
+            description="切换户型将清空数据，是否继续？"
+            onConfirm={() => {
+              setData({
+                walls: [],
+                floors: [],
+                ceilings: [],
+                furnitures: [],
+              });
+              setTimeout(() => {
+                setData(data1);
+              }, 0);
+            }}
+            okText="是"
+            cancelText="否"
+          >
+            <Card
+              hoverable
+              style={{ width: 200, margin: 20 }}
+              cover={<Image width={200} src="./house1.png" />}
+            >
               <Meta title="1室1厅0厨0卫" description="" />
             </Card>
           </Popconfirm>
-          <Popconfirm title="提醒" description="切换户型将清空数据，是否继续？" onConfirm={() => setData(data2)} okText="是" cancelText="否">
-            <Card hoverable style={{ width: 200, margin: 20 }} cover={<Image width={200} src="./house2.png" />}>
+          <Popconfirm
+            title="提醒"
+            description="切换户型将清空数据，是否继续？"
+            onConfirm={() => {
+              setData({
+                walls: [],
+                floors: [],
+                ceilings: [],
+                furnitures: [],
+              });
+
+              setTimeout(() => {
+                setData(data2);
+              }, 0);
+            }}
+            okText="是"
+            cancelText="否"
+          >
+            <Card
+              hoverable
+              style={{ width: 200, margin: 20 }}
+              cover={<Image width={200} src="./house2.png" />}
+            >
               <Meta title="1室2厅0厨0卫" description="" />
             </Card>
           </Popconfirm>
         </div>
       ) : null}
       {key === "家具" ? <div>家具</div> : null}
-      <div className="drawer-bar" onClick={() => setLeft(left === 0 ? -300 : 0)}></div>
+      <div
+        className="drawer-bar"
+        onClick={() => setLeft(left === 0 ? -300 : 0)}
+      ></div>
     </div>
   );
 }

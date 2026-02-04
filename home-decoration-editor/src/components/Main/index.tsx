@@ -3,7 +3,7 @@ import { init3D } from "./init-3d";
 import { init2D } from "./init-2d";
 import { Button } from "antd";
 import * as THREE from "three";
-import { useHouseStore } from "../../store";
+import { useHouseStore, type State } from "../../store";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import SpriteText from "three-spritetext";
 
@@ -77,6 +77,8 @@ function Main() {
 
   const [curMode, setCurMode] = useState("2d");
   const { data, updateFurniture } = useHouseStore();
+  const dataRef = useRef<State['data']>(null);
+  dataRef.current = data;
 
   function wallsVisibilityCalc() {
     const camera = cameraRef.current;
@@ -84,7 +86,7 @@ function Main() {
 
     if (!camera) return;
 
-    data.walls.forEach((item, index) => {
+    dataRef.current!.walls.forEach((item, index) => {
       const cameraDirection = new THREE.Vector3();
       camera.getWorldDirection(cameraDirection);
 
@@ -163,6 +165,10 @@ function Main() {
   useEffect(() => {
     const house = new THREE.Group();
     const scene = scene3DRef.current;
+
+    if(!data.walls.length) {
+      return;
+    }
 
     const houseObj = scene?.getObjectByName("house");
     if (houseObj) {
@@ -325,6 +331,10 @@ function Main() {
   useEffect(() => {
     const scene = scene2DRef.current!;
     const house = new THREE.Group();
+
+    if(!data.walls.length) {
+      return;
+    }
 
     const houseObj = scene.getObjectByName("house");
     if (houseObj) {

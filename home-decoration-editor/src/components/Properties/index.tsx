@@ -8,7 +8,7 @@ function Properties() {
   return (
     <div className="Properties" style={{right: right}}>
       <pre>{JSON.stringify(data.furnitures, null, 4)}</pre>
-      <div className="drawer-bar" onClick={() => setRight(right === 0 ? -300 : 0)}></div>
+      <div className="drawer-bar" onClick={() => setRight(right === 0 ? -240 : 0)}></div>
     </div>
   );
 }
