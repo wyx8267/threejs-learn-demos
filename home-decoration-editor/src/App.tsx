@@ -5,18 +5,29 @@ import Main, { getGLTFLoader } from "./components/Main";
 import Properties from "./components/Properties";
 import { useEffect, useState } from "react";
 import type { GLTF } from "three/examples/jsm/loaders/GLTFLoader.js";
+import { Progress } from "antd";
 
 const gltfLoader = getGLTFLoader();
 
-export const modelMap: Record<string, Promise<GLTF>> = {
-  "./bed.glb": gltfLoader.loadAsync("./bed.glb"),
-  "./dining-table.glb": gltfLoader.loadAsync("./dining-table.glb"),
-  "./door.glb": gltfLoader.loadAsync("./door.glb"),
-  "./window.glb": gltfLoader.loadAsync("./window.glb"),
-};
+export const modelMap: Record<string, Promise<GLTF>> = {};
 
 function App() {
   const [modelLoaded, setModelLoaded] = useState(false);
+  const [percent, setPercent] = useState(0);
+
+  useEffect(() => {
+    const percentArr = [0, 0, 0, 0];
+    ['./bed.glb', './dining-table.glb', './door.glb', './window.glb'].forEach((modelUrl, index) => {
+      modelMap[modelUrl] = gltfLoader.loadAsync(modelUrl, (event) => {
+        const per = event.loaded / event.total;
+        percentArr[index] = per;
+
+        let total = 0;
+        percentArr.forEach(item => total += item);
+        setPercent(Math.floor(total / 4 * 100));
+      });
+    })
+  }, []);
 
   useEffect(() => {
     Promise.all(Object.values(modelMap)).then(() => {
@@ -36,8 +47,14 @@ function App() {
           </div>
         </div>
       ) : (
-        <div>
+        <div id="loading">
           <p>Loading...</p>
+          <Progress
+            percent={percent}
+            style={{ width: 500 }}
+            percentPosition={{ align: 'start', type: 'inner' }}
+            size={[500, 30]}
+            strokeColor='#B7EB8F'/>
         </div>
       )}
     </div>
