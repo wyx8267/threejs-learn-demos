@@ -1,11 +1,41 @@
 import { HomeOutlined, UngroupOutlined } from "@ant-design/icons";
 import { Card, Image, Popconfirm, Segmented } from "antd";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useHouseStore } from "../../store";
 import data1 from "../../store/house1";
 import data2 from "../../store/house2";
+import { useDrag } from "react-dnd";
 
 const Meta = Card.Meta;
+
+interface MenuItemProps {
+  title: string;
+  imgSrc: string;
+}
+
+function MenuItem(props: MenuItemProps) {
+  const ref = useRef(null);
+
+  const [, drag] = useDrag({
+    type: "家具",
+    item: {
+      modelUrl: props.title === "床" ? "./bed.glb" : "./dining-table.glb",
+    }
+  })
+
+  useEffect(() => {
+    drag(ref);
+  }, [])
+  return (
+    <Card
+      hoverable
+      style={{ width: 200, margin: 20 }}
+      cover={<img width={200} ref={ref} src={props.imgSrc} />}
+    >
+      <Meta title={props.title} description="" />
+    </Card>
+  );
+}
 
 function Menu() {
   const [left, setLeft] = useState(0);
@@ -96,7 +126,10 @@ function Menu() {
           </Popconfirm>
         </div>
       ) : null}
-      {key === "家具" ? <div>家具</div> : null}
+      {key === "家具" ? <div>
+        <MenuItem title="床" imgSrc="./bed.png" />
+        <MenuItem title="餐桌" imgSrc="./table.png" />
+      </div> : null}
       <div
         className="drawer-bar"
         onClick={() => setLeft(left === 0 ? -300 : 0)}

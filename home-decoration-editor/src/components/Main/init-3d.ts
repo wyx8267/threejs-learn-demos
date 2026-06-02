@@ -11,7 +11,7 @@ export function init3D(
   const scene = new THREE.Scene();
 
   const axesHelper = new THREE.AxesHelper(5000);
-  scene.add(axesHelper);
+  // scene.add(axesHelper);
 
   const gridHelper = new THREE.GridHelper(100000, 500, "white", "white");
   gridHelper.position.y = -100;
@@ -161,5 +161,5 @@ export function init3D(
     }
   }
 
-  return { scene, camera, changeMode, changeSize };
+  return { scene, camera, changeMode, changeSize, controls };
 }

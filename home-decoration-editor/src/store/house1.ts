@@ -83,19 +83,19 @@ const data: State["data"] = {
     },
   ],
   furnitures: [
-    {
-      modelUrl: './dining-table.glb',
-      position: {
-        x: 1500,
-        y: 0,
-        z: 3000
-      },
-      rotation: {
-        x: 0,
-        y: Math.PI / 2,
-        z: 0
-      }
-    }
+    // {
+    //   modelUrl: './dining-table.glb',
+    //   position: {
+    //     x: 1500,
+    //     y: 0,
+    //     z: 3000
+    //   },
+    //   rotation: {
+    //     x: 0,
+    //     y: Math.PI / 2,
+    //     z: 0
+    //   }
+    // }
   ]
 };
 

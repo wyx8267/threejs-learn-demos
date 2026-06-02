@@ -195,21 +195,36 @@ const data: State["data"] = {
     },
   ],
   furnitures: [
-    {
-      id: 'furniture111',
-      modelUrl: './dining-table.glb',
-      position: {
-        x: 1500,
-        y: 0,
-        z: 3000
-      },
-      rotation: {
-        x: 0,
-        y: Math.PI / 2,
-        z: 0
-      }
-    }
-  ]
+    // {
+    //   id: "furniture111",
+    //   modelUrl: "./dining-table.glb",
+    //   position: {
+    //     x: 1500,
+    //     y: 0,
+    //     z: 3000,
+    //   },
+    //   rotation: {
+    //     x: 0,
+    //     y: Math.PI / 2,
+    //     z: 0,
+    //   },
+    // },
+    // {
+    //   id: "furniture222",
+    //   modelUrl: "./bed.glb",
+    //   modelScale: 800,
+    //   position: {
+    //     x: -700,
+    //     y: 0,
+    //     z: 7000,
+    //   },
+    //   rotation: {
+    //     x: 0,
+    //     y: Math.PI / 2,
+    //     z: 0,
+    //   },
+    // },
+  ],
 };
 
 export default data;
