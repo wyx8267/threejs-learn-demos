@@ -10,6 +10,14 @@ body {
     height: 60px;
     border-bottom: 1px solid #000;
 
+    display: flex;
+    justify-content: space-between;
+
+    .btns {
+      margin-right: 20px;
+      margin-top: 15px;
+    }
+
     .logo {
       line-height: 60px;
       margin: 0;
@@ -97,4 +105,21 @@ body {
   justify-content: center;
   align-items: center;
   height: 100vh;
+}
+
+#preview {
+  position: absolute;
+  background: pink;
+  width: 100%;
+  height: 100%;
+  z-index: 10;
+
+  .close-btn {
+    position: absolute;
+    right: 20px;
+    top: 20px;
+    font-size: 30px;
+    cursor:pointer;
+    color: #fff;
+  }
 }

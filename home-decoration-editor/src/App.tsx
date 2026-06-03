@@ -6,6 +6,7 @@ import Properties from "./components/Properties";
 import { useEffect, useState } from "react";
 import type { GLTF } from "three/examples/jsm/loaders/GLTFLoader.js";
 import { Progress } from "antd";
+import Preview from "./components/Preview";
 
 const gltfLoader = getGLTFLoader();
 
@@ -45,6 +46,7 @@ function App() {
             <Main />
             <Properties />
           </div>
+          <Preview />
         </div>
       ) : (
         <div id="loading">

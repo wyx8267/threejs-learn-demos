@@ -27,7 +27,7 @@ export function getGLTFLoader() {
   return loaderCache;
 }
 
-async function loadWindow() {
+export async function loadWindow() {
   // if (winModel !== null) {
   //   return winModel;
   // } else {
@@ -54,7 +54,7 @@ async function loadWindow() {
 
 // let doorModel: { model: THREE.Group; size: THREE.Vector3 } | null = null;
 
-async function loadDoor() {
+export async function loadDoor() {
   // if (doorModel !== null) {
   //   return doorModel;
   // } else {
@@ -80,7 +80,7 @@ async function loadDoor() {
 }
 
 const textureLoader = new THREE.TextureLoader();
-const floorTexture = textureLoader.load("/floor-texture.png");
+export const floorTexture = textureLoader.load("/floor-texture.png");
 floorTexture.colorSpace = THREE.SRGBColorSpace;
 floorTexture.wrapS = THREE.RepeatWrapping;
 floorTexture.wrapT = THREE.RepeatWrapping;

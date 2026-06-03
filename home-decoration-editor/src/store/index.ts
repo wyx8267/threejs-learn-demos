@@ -77,17 +77,28 @@ export interface State {
     ceilings: Array<Ceiling>;
     furnitures: Array<Furniture>;
   };
+  showPreview: boolean;
 }
 
 export interface Action {
   setData(data: State["data"]): void;
   updateFurniture(id: string, type: "position" | "rotation", info: Vector3): void;
   addFurniture(furniture: Furniture): void;
+  toggleShowPreview(): void;
 }
 
 const stateCreator: StateCreator<State & Action> = (set, get) => {
     return {
     data,
+    showPreview: false,
+    toggleShowPreview() {
+      set((state) => {
+        return {
+          ...state,
+          showPreview: !state.showPreview,
+        };
+      });
+    },
     setData(data) {
       set((state) => {
         return {
